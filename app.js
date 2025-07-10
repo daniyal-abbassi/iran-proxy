@@ -24,13 +24,21 @@ async function scraping() {
         const $ = cheerio.load(res.data);
         //extract some text 
         const $proxyTable = $('tbody').children('tr');
-        // console.log('Number of Proxies: ',$proxyTable.length)
-        // console.log('Childrens:   ',$proxyTable.text())
+        const proxyList = [];
         $proxyTable.map((i,row) => {
-            let $ip = $(row).children().eq(0).text();
-            let $port = $(row).children().eq(1).text();
-            console.log('ip is: ',$ip,'  and port is: ',$port)
+            let ip = $(row).children().eq(0).text();
+            let port = $(row).children().eq(1).text();
+            let protocol = $(row).children().eq(3).text();
+            let date = $(row).children().eq(-1).text();
+            // console.log(`ip: ${ip}:${port}\n${protocol} - ${date}`)
+            proxyList.push({
+                ip: ip,
+                port: port,
+                protocol: protocol,
+                date: date
+            })
         })
+        console.log(proxyList)
     } catch (error) {
         console.error('Error: %s',error)
     }
