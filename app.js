@@ -10,6 +10,7 @@ const cheerio = require('cheerio');
 
 //example site
 let siteProxy = 'https://freeproxyupdate.com/iran-ir';
+let siteProxy1 = 'https://proxy-spider.com/proxies/locations/ir-iran-islamic-republic-of';
 //axios config options
 const config = {
     headers: {
@@ -47,15 +48,26 @@ async function scraping() {
     }
 }
 
-scraping()
+// scraping()
+async function scraping1() {
+    try {
+        const res = await axios.get(siteProxy1,config);
+        const $ = cheerio.load(res.data);
+        const $testIp = $('td > abbr').text();
+        console.log($testIp)
+    } catch (error) {
+        console.error('ERROR: %s',error)
+    }
+}
 
-
+scraping1()
 
 
 
 
 app.get("/", (req, res) => {
-    res.render('list',{proxyList})
+    // res.render('list',{proxyList})
+    res.send('Hello world!!')
 })
 
 app.listen(3001, () => { console.log("Server is Running on Port: 3001") })
