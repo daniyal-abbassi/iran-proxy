@@ -16,7 +16,13 @@
            </tr>
         </thead>
         <tbody>
-            
+            <% proxyList.forEach((proxy) => {%>
+                <tr>
+                    <td><%=proxy.ipAddress%></td>
+                    <td><%=proxy.port%></td>
+                    <td><%=proxy.protocol%></td>
+                </tr>
+            <%})%>
         </tbody>
     </table>
 </body>
