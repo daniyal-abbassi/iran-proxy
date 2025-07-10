@@ -55,7 +55,7 @@ scraping()
 
 
 app.get("/", (req, res) => {
-    res.send(proxyList)
+    res.render('list',{proxyList})
 })
 
 app.listen(3001, () => { console.log("Server is Running on Port: 3001") })
