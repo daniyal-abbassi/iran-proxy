@@ -78,7 +78,7 @@ const url = 'https://www.ditatompel.com/proxy/country/ir';
 async function scrape() {
     try {
         //create a browser
-        const browser = await pup.launch({ headless: false });
+        const browser = await pup.launch({ headless: true });
         //create a page
         const page = await browser.newPage();
         console.log('we are scraping from ' + url + ":");
@@ -90,25 +90,33 @@ async function scrape() {
         //wait for changes
         await page.waitForNetworkIdle();
         let table = await page.evaluate(() => {
-            
-            let tableData = Array.from(document.querySelectorAll('td'), (strong) => strong.textContent);
+            let tableData = Array.from(document.querySelectorAll('td  strong'), (strong) => strong.textContent);
             return tableData
         })
+        //convert array to object => {ipAddress,port}
         console.log(table)
+        const proxyList = [];
+        for(let i = 0;i<table.length;i++) {
+            let [ip,port] = table[i].split(':');
+            proxyList.push({ipAddress: ip,port: port})
+        }
+        console.log(proxyList)
+        FinalproxyList.push(...proxyList)
         await browser.close();
     } catch (error) {
         console.log('scrape failed: ', error);
     }
 }
-
-scrape();
+await scraping()
+await scraping1()
+await scrape();
 
 
 
 
 app.get("/", (req, res) => {
-    // res.render('list',{FinalproxyList})
-    res.send('Hello world!!')
+    res.render('list',{FinalproxyList})
+    // res.send('Hello world!!')
 })
 
 app.listen(3001, () => { console.log("Server is Running on Port: 3001") })
