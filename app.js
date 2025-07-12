@@ -78,15 +78,18 @@ const url = 'https://www.ditatompel.com/proxy/country/ir';
 async function scrape() {
     try {
         //create a browser
-        const browser = await pup.launch({ headless: true });
+        const browser = await pup.launch({ headless: false });
         //create a page
         const page = await browser.newPage();
         console.log('we are scraping from ' + url + ":");
         //go to the page
         await page.goto(url);
-        //get the table/tr/td/strong/span and... test
+        // //get the table/tr/td/strong/span and... test
+        //changing select
+        await page.select('select#rowsPerPage','100');
+        //wait for changes
+        await page.waitForNetworkIdle();
         let table = await page.evaluate(() => {
-             (async function changeSelect() { await page.select('select#rowsPerPage', '100') })()
             
             let tableData = Array.from(document.querySelectorAll('td'), (strong) => strong.textContent);
             return tableData
