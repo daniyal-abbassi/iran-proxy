@@ -94,22 +94,22 @@ async function scrape() {
             return tableData
         })
         //convert array to object => {ipAddress,port}
-        console.log(table)
+        // console.log(table)
         const proxyList = [];
         for(let i = 0;i<table.length;i++) {
             let [ip,port] = table[i].split(':');
             proxyList.push({ipAddress: ip,port: port})
         }
-        console.log(proxyList)
+        // console.log(proxyList)
         FinalproxyList.push(...proxyList)
         await browser.close();
     } catch (error) {
         console.log('scrape failed: ', error);
     }
 }
-await scraping()
-await scraping1()
-await scrape();
+scraping1()
+// scrape()
+scraping()
 
 
 
