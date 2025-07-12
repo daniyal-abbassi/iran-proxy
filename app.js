@@ -78,17 +78,22 @@ const url = 'https://www.ditatompel.com/proxy/country/ir';
 async function scrape() {
     try {
         //create a browser
-        const browser = await pup.launch({headless: false});
+        const browser = await pup.launch({headless: true});
         //create a page
         const page = await browser.newPage();
         console.log('we are scraping from ' + url + ":");
         //go to the page
-        await page.goto(url)
+        await page.goto(url);
+        //get the table/tr/td/strong/span and... test
+        let table = await page.evaluate(()=>{
+            let tableData = Array.from(document.querySelectorAll('td'),(strong)=>strong.textContent);
+            return tableData
+        })
+        console.log(table)
+        await browser.close();
     } catch (error) {
         console.log('scrape failed: ',error);
-    } finally {
-        await browser.close();
-    }
+    } 
 }
 
 scrape();
