@@ -86,7 +86,7 @@ async function scrape() {
         await page.goto(url);
         // //get the table/tr/td/strong/span and... test
         //changing select
-        await page.select('select#rowsPerPage','100');
+        await page.select('select#rowsPerPage', '100');
         //wait for changes
         await page.waitForNetworkIdle();
         let table = await page.evaluate(() => {
@@ -96,9 +96,9 @@ async function scrape() {
         //convert array to object => {ipAddress,port}
         // console.log(table)
         const proxyList = [];
-        for(let i = 0;i<table.length;i++) {
-            let [ip,port] = table[i].split(':');
-            proxyList.push({ipAddress: ip,port: port})
+        for (let i = 0; i < table.length; i++) {
+            let [ip, port] = table[i].split(':');
+            proxyList.push({ ipAddress: ip, port: port })
         }
         // console.log(proxyList)
         FinalproxyList.push(...proxyList)
@@ -107,15 +107,16 @@ async function scrape() {
         console.log('scrape failed: ', error);
     }
 }
-scraping1()
-// scrape()
-scraping()
 
+scraping();
+scraping1();
+scrape();
 
 
 
 app.get("/", (req, res) => {
-    res.render('list',{FinalproxyList})
+
+    res.render('list', { FinalproxyList })
     // res.send('Hello world!!')
 })
 
