@@ -67,15 +67,38 @@ async function scraping1() {
         console.error('ERROR: %s', error)
     }
 }
-scraping()
-scraping1()
+
+//DYNAMIC JAVASCRIPT    
+
+
+const pup = require('puppeteer');
+const url = 'https://www.ditatompel.com/proxy/country/ir';
+
+// create an async function
+async function scrape() {
+    try {
+        //create a browser
+        const browser = await pup.launch({headless: false});
+        //create a page
+        const page = await browser.newPage();
+        console.log('we are scraping from ' + url + ":");
+        //go to the page
+        await page.goto(url)
+    } catch (error) {
+        console.log('scrape failed: ',error);
+    } finally {
+        await browser.close();
+    }
+}
+
+scrape();
 
 
 
 
 app.get("/", (req, res) => {
-    res.render('list',{FinalproxyList})
-    // res.send('Hello world!!')
+    // res.render('list',{FinalproxyList})
+    res.send('Hello world!!')
 })
 
 app.listen(3001, () => { console.log("Server is Running on Port: 3001") })
