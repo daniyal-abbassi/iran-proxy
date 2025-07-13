@@ -108,39 +108,6 @@ async function scrape() {
     }
 }
 
-//SCRATE WITH TOR PROXIES
-
-//create a main functin
-async function main() {
-
-    //lunch the puppetter
-    const browser = await pup.launch({headless: false})   
-    //create a new page
-    const page = await browser.newPage();
-    //go to https://api.ipify.org
-    await page.goto('https://api.ipify.org');
-    //wait 3 seconds and close the browser instance
-    setTimeout(() => {
-        browser.close();
-    },3000)
-}
-
-main();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // scraping();
 // scraping1();
