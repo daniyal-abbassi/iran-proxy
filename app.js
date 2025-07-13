@@ -36,12 +36,14 @@ async function scraping() {
             if (!protocol) {
                 return
             }
-            proxyList.push({
-                ipAddress: ip,
-                port: port,
-                protocol: protocol,
-            })
+            // proxyList.push({
+            //     ipAddress: ip,
+            //     port: port,
+            //     protocol: protocol,
+            // })
+            proxyList.push(`${ip}:${port}`)
         })
+        console.log(proxyList)
         FinalproxyList.push(...proxyList)
     } catch (error) {
         console.error('Error: %s', error)
@@ -60,8 +62,12 @@ async function scraping1() {
         })
         let proxyList1 = []
         for (let i = 0; i < proxyList.length; i += 2) {
-            proxyList1.push({ ipAddress: proxyList[i], port: proxyList[i + 1] })
+            // proxyList1.push({ ipAddress: proxyList[i], port: proxyList[i + 1] })
+            let ip = proxyList[i];
+            let port = proxyList[i + 1]
+            proxyList1.push(`${ip}:${port}`)
         }
+        console.log(proxyList1)
         FinalproxyList.push(...proxyList1)
     } catch (error) {
         console.error('ERROR: %s', error)
@@ -98,9 +104,10 @@ async function scrape() {
         const proxyList = [];
         for (let i = 0; i < table.length; i++) {
             let [ip, port] = table[i].split(':');
-            proxyList.push({ ipAddress: ip, port: port })
+            // proxyList.push({ ipAddress: ip, port: port })
+            proxyList.push(`${ip}:${port}`)
         }
-        // console.log(proxyList)
+        console.log(proxyList)
         FinalproxyList.push(...proxyList)
         await browser.close();
     } catch (error) {
@@ -109,16 +116,16 @@ async function scrape() {
 }
 
 
-// scraping();
-// scraping1();
-// scrape();
+scraping();
+scraping1();
+scrape();
 
 
 
 app.get("/", (req, res) => {
 
-    // res.render('list', { FinalproxyList })
-    res.send('Hello world!!')
+    res.render('list', { FinalproxyList })
+    // res.send('Hello world!!')
 })
 
 app.listen(3001, () => { console.log("Server is Running on Port: 3001") })
