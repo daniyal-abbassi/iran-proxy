@@ -117,6 +117,7 @@ async function scrape() {
 }
 
 const monsterUrl = "https://getfreeproxy.com/db/country/IR?page=1&protocol=http&country_code=IR&country_name=Iran%2C+Islamic+Republic+of"
+//with puppetter methode
 async function scrapeMonster() {
     //create a browser
     const browser = await pup.launch({ headless: false });
@@ -125,8 +126,14 @@ async function scrapeMonster() {
     console.log('we are scraping from ' + monsterUrl + ":");
     //go to the page
     await page.goto(monsterUrl);
-    let table = await page.evaluate(() => {
-        let tableData = Array.from(document.querySelectorAll('tr td a'),(a) => a.textContent);
+    let totalPageNumber = await page.$eval('span.font-medium:nth-child(4)', el => el.textContent)
+    
+    let table = await page.evaluate(() => { 
+        let tableData = Array.from(document.querySelectorAll('tr td a'), (a) => {
+            let line = a.textContent;
+            return line.trim()
+        }
+        ).filter(str => str !== '').map(url => url.replace(/^https?:\/\//i, ''));
         return tableData
     })
 
