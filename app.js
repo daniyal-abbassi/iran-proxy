@@ -79,17 +79,18 @@ async function scraping1() {
 
 const pup = require('puppeteer');
 const url = 'https://www.ditatompel.com/proxy/country/ir';
-
+const newURL = 'https://proxyhub.me/en/ir-free-proxy-list.html'
 // create an async function
 async function scrape() {
     try {
         //create a browser
-        const browser = await pup.launch({ headless: true });
+        const browser = await pup.launch({ args: ['--proxy-server=http://65.108.145.212:8084'], headless: false });
         //create a page
         const page = await browser.newPage();
         console.log('we are scraping from ' + url + ":");
         //go to the page
-        await page.goto(url);
+        // await page.goto(url);
+        await page.goto(newURL);
         // //get the table/tr/td/strong/span and... test
         //changing select
         await page.select('select#rowsPerPage', '100');
@@ -116,8 +117,8 @@ async function scrape() {
 }
 
 
-scraping();
-scraping1();
+// scraping();
+// scraping1();
 scrape();
 
 
