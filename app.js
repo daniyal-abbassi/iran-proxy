@@ -125,8 +125,8 @@ async function scrapeMonster() {
     const page = await browser.newPage();
 
     //create timeout 
-     const PAGE_LOAD_TIMEOUT = 30000; // 30 seconds
-  const DELAY_BETWEEN_PAGES = Math.floor(Math.random() * 5000) + 2000; // 2-7s; 
+    const PAGE_LOAD_TIMEOUT = 30000; // 30 seconds
+    const DELAY_BETWEEN_PAGES = Math.floor(Math.random() * 5000) + 2000; // 2-7s; 
     try {
         console.log('we are scraping from ' + monsterUrl + ":");
         //go to the page
@@ -137,7 +137,7 @@ async function scrapeMonster() {
         for (let i = 1; i < 10; i++) {
             console.log(`\nSCRAPING FROM PAGE ${i}...`)
             //go to desired page number
-            await page.goto(`https://getfreeproxy.com/db/country/IR?page=${i}&protocol=http&country_code=IR&country_name=Iran%2C+Islamic+Republic+of`,{
+            await page.goto(`https://getfreeproxy.com/db/country/IR?page=${i}&protocol=http&country_code=IR&country_name=Iran%2C+Islamic+Republic+of`, {
                 waitUntil: 'domcontentloaded',
                 timeout: PAGE_LOAD_TIMEOUT
             }).catch(() => { throw new Error(`Timeout loading page ${i}`); });
@@ -154,16 +154,16 @@ async function scrapeMonster() {
             console.log(table)
             //wait 5s before goes to next page
             console.log(`Waiting ${DELAY_BETWEEN_PAGES / 1000}s...`);
-            for(let j =DELAY_BETWEEN_PAGES / 1000;j>0;j--) {
+            for (let j = Math.round(DELAY_BETWEEN_PAGES / 1000); j > 0; j--) {
                 await new Promise(resolve => setTimeout(resolve, 1000));
                 process.stdout.write(`${j}...`)
             }
             console.log('\n')
         }
-        
+
         await browser.close()
     } catch (error) {
-        console.error('scraping failed: ',error)
+        console.error('scraping failed: ', error)
     }
 };
 // scraping();
