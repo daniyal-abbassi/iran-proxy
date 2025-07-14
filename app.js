@@ -116,17 +116,32 @@ async function scrape() {
     }
 }
 
+const monsterUrl = "https://getfreeproxy.com/db/country/IR?page=1&protocol=http&country_code=IR&country_name=Iran%2C+Islamic+Republic+of"
+async function scrapeMonster() {
+    //create a browser
+    const browser = await pup.launch({ headless: false });
+    //create a page
+    const page = await browser.newPage();
+    console.log('we are scraping from ' + monsterUrl + ":");
+    //go to the page
+    await page.goto(monsterUrl);
+    let table = await page.evaluate(() => {
+        let tableData = Array.from(document.querySelectorAll('tr td a'),(a) => a.textContent);
+        return tableData
+    })
 
+    console.log(table)
+}
 // scraping();
 // scraping1();
-scrape();
-
+// scrape();
+scrapeMonster()
 
 
 app.get("/", (req, res) => {
 
-    res.render('list', { FinalproxyList })
-    // res.send('Hello world!!')
+    // res.render('list', { FinalproxyList })
+    res.send('Hello world!!')
 })
 
 app.listen(3001, () => { console.log("Server is Running on Port: 3001") })
