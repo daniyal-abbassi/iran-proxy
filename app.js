@@ -168,7 +168,7 @@ async function scrapeMonster() {
 };
 //scrape from https://getfreeproxy.com
 //import requirements
-const fs = require('fs');
+const fs = require('fs').promises;
 const path = require('path');
 
 // --- configurations ---
@@ -320,7 +320,7 @@ async function scrapeInterleaved() {
 } //main func
 
 
-
+scrapeInterleaved();
 
 
 // scraping();
