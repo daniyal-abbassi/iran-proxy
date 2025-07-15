@@ -90,7 +90,7 @@ async function scrape() {
         console.log('we are scraping from ' + url + ":");
         //go to the page
         // await page.goto(url);
-        await page.goto(newURL);
+        await page.goto(url);
         // //get the table/tr/td/strong/span and... test
         //changing select
         await page.select('select#rowsPerPage', '100');
@@ -166,6 +166,8 @@ async function scrapeMonster() {
         console.error('scraping failed: ', error)
     }
 };
+
+
 //scrape from https://getfreeproxy.com
 //import requirements
 const fs = require('fs').promises;
@@ -261,119 +263,6 @@ async function getTotalPage(protocol) {
     }
 }
 
-// async function scrapeInterleaved() {
-//     console.log('🚀 Initializing advanced interleaved scraper...');
-
-//     //declare objects for storing proxies AND page number for each
-//     const allProxies = {}
-//     const protocolPageCounts = {}
-//     //puppeteer browser instance
-//     let browser;
-//     try {
-//         //browser initiate
-//         browser = await pup.launch({
-//             headless: true,
-//             args: ['--no-sandbox', '--disable-setuid-sandbox'],
-//             timeout: 60000
-//         });
-//         //loop through protocols and create txt files 
-//         for (const protocol of PROTOCOLS) {
-//             //add each protocol array to master json file
-//             allProxies[protocol] = []
-//             //get txt file path and create it
-//             const txtFile = path.join(__dirname, `proxies-${protocol}.txt`)
-//             await fs.writeFile(txtFile, '', 'utf8')
-//             //get that protocol page number - store it
-//             protocolPageCounts[protocol] = await getTotalPage(protocol);
-//             console.log(`✅ Protocol '${protocol}' has ${protocolPageCounts[protocol]} pages. File 'proxies-${protocol}.txt' is ready.`);
-//             //small delay
-//             await sleep(1000)
-//         }
-//         //get total page of all protocol
-//         const maxOfAllPages = Math.max(...Object.values(protocolPageCounts))
-//         console.log(`\n📈 Maximum pages to scrape across all protocols is ${maxOfAllPages}. Starting main loop...`);
-
-//         //loop through pages interleaved by chunks
-//         for (let pageChunkStart = 1; pageChunkStart <= maxOfAllPages; pageChunkStart += SCRAPE_CHUNK_SIZE) {
-//             //declare end of page chuck
-//             const pageChunkEnd = pageChunkStart + SCRAPE_CHUNK_SIZE - 1;
-//             //loop through each protocol we are in
-//             for (const protocol of PROTOCOLS) {
-//                 //maximull page number of this protocol
-//                 const protocolMaxPage = protocolPageCounts[protocol]
-//                 //declare an end page for this protocol
-//                 const chunkEnd = Math.min(pageChunkEnd, protocolMaxPage)
-//                 //check to see if this chuck is over
-//                 if (pageChunkStart > protocolMaxPage) {
-//                     continue //skip the chunk
-//                 }
-//                 console.log(`\n--- Cycling to protocol '${protocol}', pages ${pageChunkStart}-${pageChunkEnd} ---`);
-
-//                 //loop through this chunck and scrape
-//                 for (let page = pageChunkStart; page <= chunkEnd; page++) {
-//                     //declare url
-//                     const url = `https://getfreeproxy.com/db/country/IR?protocol=${protocol}&page=${page}`;
-//                     console.log(`[Scraping page ${page} of ${protocolMaxPage} for ${protocol} protocol]`);
-//                     //page instance
-//                     const pageInstance = await browser.newPage();
-//                     //page proxy list array
-//                     const pageProxies = [];
-//                     try {
-//                         //get some random user agent
-//                         const randomUserAgent = USER_AGENTS[Math.floor(Math.random() * USER_AGENTS.length)];
-//                         //set user agent
-//                         await pageInstance.setUserAgent(randomUserAgent)
-//                         //set timeout
-//                         await pageInstance.setDefaultNavigationTimeout(30000);
-//                         //prevent usege wasting
-//                         await pageInstance.setRequestInterception(true);
-//                         pageInstance.on('request', req => {
-//                             ['image', 'stylesheet', 'font'].includes(req.resourceType()) ? req.abort() : req.continue();
-//                         });
-//                         await pageInstance.goto(url, { waitUntil: 'domcontentloaded' });
-//                         //get the proxies
-//                         pageProxies = await pageInstance.evaluate(() =>
-//                             Array.from(document.querySelectorAll('tr td a'))
-//                                 .map(a => a.textContent.trim().replace(/^https?:\/\//i, ''))
-//                                 .filter(Boolean)
-//                         );
-//                         //add to master json file
-//                         if (pageProxies.length > 0) {
-//                             //add to txt file (each protocol - seperate)
-//                             allProxies[protocol].push(...pageProxies);
-//                             const txtFile = path.join(__dirname, `proxies-${protocol}.txt`)
-//                             await fs.appendFile(txtFile, pageProxies.join('\n') + '\n', 'utf8');
-//                         }
-//                     } catch (error) {
-//                         console.warn(`   - ⚠️ Failed to scrape page ${page} for ${protocol}: ${pageError.message}`);
-
-//                     } finally {
-//                         //a random delay
-//                         const delay = Math.floor(Math.random() * 3000) + 2000 //2-5 sec
-//                         await sleep(delay)
-//                         // await pageInstance.close()
-//                     }
-//                 } //each chuck for ecah protocl
-//             } //each protocol
-//         } //page chuck loop
-
-//         //add master object in a JSON way
-//         await fs.writeFile(PROXIES_JSON_FILE, JSON.stringify(allProxies, null, 2), 'utf8');
-//         console.log('\n\n🎉 All scraping tasks completed successfully!');
-//         console.log('Find your files in the current directory:');
-//         for (const protocol of PROTOCOLS) {
-//             console.log(`   - Text file: proxies-${protocol}.txt (${allProxies[protocol].length} proxies)`);
-//         }
-//         console.log(`   - JSON file: ${PROXIES_JSON_FILE}`);
-//     } catch (error) {
-//         console.error('\n❌ A critical error occurred during the main process:', error.message);
-
-//     } finally {
-//         if (browser) {
-//             await browser.close();
-//         }
-//     }
-// } //main func
 
 async function scrapeInterleaved() {
     console.log('🚀 Initializing advanced interleaved scraper...');
@@ -490,12 +379,10 @@ async function scrapeInterleaved() {
     }
 }
 
-scrapeInterleaved();
-// getTotalPage('http')
-
-// scraping();
-// scraping1();
-// scrape();
+// scrapeInterleaved();
+scraping();
+scraping1();
+scrape();
 // scrapeMonster()
 
 
