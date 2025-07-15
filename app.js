@@ -147,7 +147,7 @@ async function scrapeMonster() {
                     let line = a.textContent;
                     return line.trim()
                 }
-                ).filter(str => str !== '').map(url => url.replace(/^https?:\/\//i, ''));
+                ).filter(str => str !== '').map(url => url.split('://')[1]);
                 return tableData
             })
             console.log(`PROXIES OF PAGE ${i}: `)
@@ -195,40 +195,87 @@ const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
  * @param {String} protocol - proxy protocol[http,https,socks4,socks5]
  * @returns {Promise<number>} - total page Number
  */
+
 async function getTotalPage(protocol) {
+    let browser;
     try {
-        //declare url and log the status
-        const url = `https://getfreeproxy.com/db/country/IR?protocol=${protocol}`;
-        console.log(`🔎 Checking total pages for '${protocol}'...`);
-        //make the request with axios
-        const response = await axios.get(url, {
-            headers: { 'User-Agent': USER_AGENTS[0] },
-            timeout: 30000
+        browser = await pup.launch({
+            headless: true, // Switch to true in production
+            args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-dev-shm-usage'
+            ],
+            timeout: 60000
         });
-        //initiate cheerio
-        const $ = cheerio.load(response.date);
-        //extract the total number page
-        const pageTotalNumberTxt = $('span.font-medium:nth-child(4)').text();
-        //convert Num string to number type
+
+        const page = await browser.newPage();
+        
+        // 1. Set browser configuration (preserved your settings)
+        await page.setUserAgent(USER_AGENTS[0]);
+        await page.setDefaultNavigationTimeout(60000);
+        await page.setViewport({ width: 1366, height: 768 });
+
+        // 2. Add request interception (NEW - based on network analysis)
+        await page.setRequestInterception(true);
+        page.on('request', req => {
+            // Block ads, tracking, and non-essential resources
+            if (['image', 'font', 'stylesheet', 'media', 'script']
+                .includes(req.resourceType()) &&
+                !req.url().includes('htmx.min.js')) {
+                req.abort();
+            } else {
+                req.continue();
+            }
+        });
+
+        // 3. Navigation with your original URL and logging
+        const url = `https://getfreeproxy.com/db/country/IR?protocol=${protocol}&region=&city=&asn=&page=1`;
+        console.log(`🔎 Checking total pages for '${protocol}'...`);
+        
+        await page.goto(url, {
+            waitUntil: 'domcontentloaded', // Changed from array to string
+            timeout: 45000
+        });
+
+        // 4. Add DOM readiness check (NEW)
+        await page.waitForSelector('span.font-medium:nth-child(4)', {
+            timeout: 10000
+        });
+
+        // 5. Preserved your original extraction logic
+        const pageTotalNumberTxt = await page.$eval('span.font-medium:nth-child(4)', num => num.textContent);
         const pageTotalNumber = parseInt(pageTotalNumberTxt, 10);
-        //safty return a number for page
-        console.log('total page number is', pageTotalNumber)
-        return isNaN(pageTotalNumber) ? 1 : pageTotalNumber; // if scrape fails - return 1
+        
+        console.log('total page number is', pageTotalNumber);
+        return isNaN(pageTotalNumber) ? 1 : pageTotalNumber;
+
     } catch (error) {
-        //log the status and return 1 if get page failed
         console.warn(`⚠️ Could not determine total pages for '${protocol}'. Defaulting to 1. Error: ${error.message}`);
-        return 1; //if encounter error - return 1 default
+        return 1;
+    } finally {
+        // 6. Enhanced browser cleanup
+        if (browser) {
+            await browser.close().catch(e => console.debug('Browser cleanup warning:', e.message));
+        }
     }
 }
 
-//main function to scrape
 async function scrapeInterleaved() {
     console.log('🚀 Initializing advanced interleaved scraper...');
 
     //declare objects for storing proxies AND page number for each
     const allProxies = {}
     const protocolPageCounts = {}
+    //puppeteer browser instance
+    let browser;
     try {
+        //browser initiate
+        browser = await pup.launch({
+            headless: true,
+            args: ['--no-sandbox', '--disable-setuid-sandbox'],
+            timeout: 60000
+        });
         //loop through protocols and create txt files 
         for (const protocol of PROTOCOLS) {
             //add each protocol array to master json file
@@ -244,7 +291,7 @@ async function scrapeInterleaved() {
         }
         //get total page of all protocol
         const maxOfAllPages = Math.max(...Object.values(protocolPageCounts))
-        console.log(`\n📈 Maximum pages to scrape across all protocols is ${maxOverallPages}. Starting main loop...`);
+        console.log(`\n📈 Maximum pages to scrape across all protocols is ${maxOfAllPages}. Starting main loop...`);
 
         //loop through pages interleaved by chunks
         for (let pageChunkStart = 1; pageChunkStart <= maxOfAllPages; pageChunkStart += SCRAPE_CHUNK_SIZE) {
@@ -260,32 +307,36 @@ async function scrapeInterleaved() {
                 if (pageChunkStart > protocolMaxPage) {
                     continue //skip the chunk
                 }
-                console.log(`\n--- Cycling to protocol '${protocol}', pages ${pageChunkStart}-${effectiveChunkEnd} ---`);
+                console.log(`\n--- Cycling to protocol '${protocol}', pages ${pageChunkStart}-${pageChunkEnd} ---`);
 
                 //loop through this chunck and scrape
                 for (let page = pageChunkStart; page <= chunkEnd; page++) {
                     //declare url
                     const url = `https://getfreeproxy.com/db/country/IR?protocol=${protocol}&page=${page}`;
                     console.log(`[Scraping page ${page} of ${protocolMaxPage} for ${protocol} protocol]`);
+                    //page instance
+                    const pageInstance = await browser.newPage();
+                    //page proxy list array
+                    const pageProxies = [];
                     try {
                         //get some random user agent
                         const randomUserAgent = USER_AGENTS[Math.floor(Math.random() * USER_AGENTS.length)];
-                        //make a get request
-                        const response = await axios.get(url, {
-                            headers: { 'User-Agent': randomUserAgent },
-                            timeout: 12000
-                        })
-                        //load cheerio
-                        const $ = cheerio.load(response.data)
-                        //page proxy list
-                        const pageProxies = [];
-                        //extract the proxies from page
-                        $('tr td a').each((_, element) => {
-                            const proxyURL = $(element).text().trim().split('://')[1];
-                            if (proxyURL) {
-                                pageProxies.push(proxyURL)
-                            }
-                        })
+                        //set user agent
+                        await pageInstance.setUserAgent(randomUserAgent)
+                        //set timeout
+                        await pageInstance.setDefaultNavigationTimeout(30000);
+                        //prevent usege wasting
+                        await pageInstance.setRequestInterception(true);
+                        pageInstance.on('request', req => {
+                            ['image', 'stylesheet', 'font'].includes(req.resourceType()) ? req.abort() : req.continue();
+                        });
+                        await pageInstance.goto(url, { waitUntil: 'domcontentloaded' });
+                        //get the proxies
+                        pageProxies = await pageInstance.evaluate(() =>
+                            Array.from(document.querySelectorAll('tr td a'))
+                                .map(a => a.textContent.trim().replace(/^https?:\/\//i, ''))
+                                .filter(Boolean)
+                        );
                         //add to master json file
                         if (pageProxies.length > 0) {
                             //add to txt file (each protocol - seperate)
@@ -300,6 +351,7 @@ async function scrapeInterleaved() {
                         //a random delay
                         const delay = Math.floor(Math.random() * 3000) + 2000 //2-5 sec
                         await sleep(delay)
+                        // await pageInstance.close()
                     }
                 } //each chuck for ecah protocl
             } //each protocol
@@ -316,12 +368,16 @@ async function scrapeInterleaved() {
     } catch (error) {
         console.error('\n❌ A critical error occurred during the main process:', error.message);
 
+    } finally {
+        if (browser) {
+            await browser.close();
+        }
     }
 } //main func
 
 
 scrapeInterleaved();
-
+// getTotalPage('http')
 
 // scraping();
 // scraping1();
