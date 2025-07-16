@@ -33,7 +33,8 @@ async function fetchFromTxtFile() {
         throw new Error('Failed to scrape proxies from TXT file.');
     }
 }
-fetchFromTxtFile()
+// TEST
+// fetchFromTxtFile()
 
 
 // APPROACH 2 - SCRAPE FROM PAGE
