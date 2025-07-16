@@ -12,7 +12,9 @@ async function run() {
 
     //Check Proxies 
     console.log('Checking proxies...')
-    checkProxiesFromFile(proxies)
+    const workingProxies = checkProxiesFromFile(proxies)
+    console.log(workingProxies)
+    return workingProxies
 }
 
-run()
+console.log(run())
