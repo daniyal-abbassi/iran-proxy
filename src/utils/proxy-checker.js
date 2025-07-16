@@ -71,29 +71,85 @@ function checkSingleProxy(proxyString) {
     });
 }
 
+
+// async function checkProxiesFromFile(filePath) {
+//     console.log(`Starting proxy check from file: ${filePath}`);
+//     const startTime = Date.now();
+//     let proxies;
+
+//     try {
+//         //read proxies file line by line
+//         const rawData = await fs.readFile(filePath, 'utf-8');
+//         //use Boolean to only true values(not empty lines)
+//         proxies = rawData.split('\n').map(p => p.trim()).filter(Boolean);
+//         if (proxies.length === 0) {
+//             console.log('⚠️ Warning: Proxy file is empty.');
+//             return [];
+//         }
+//     } catch (error) {
+//         console.error(`❌ Error: Could not read the proxy file at '${filePath}'.`);
+//         return [];
+//     }
+
+//     const totalProxies = proxies.length;
+//     console.log(`Loaded ${totalProxies} proxies. Starting check in chunks of ${CHUNK_SIZE}...`);
+
+//     const allWorkingProxies = [];
+//     // declare working and dead counters to show in console
+//     let workingCount = 0;
+//     let deadCount = 0;
+//     //loop through proxies in chunk (50 each)
+//     for (let i = 0; i < totalProxies; i += CHUNK_SIZE) {
+//         // get desired numbers of proxies (base on chunk size)
+//         const chunk = proxies.slice(i, i + CHUNK_SIZE);
+//         // check proxies with checkSingleProxy function - map over them
+//         const checkPromises = chunk.map(p => checkSingleProxy(p));
+//         //resolve all returning promises 
+//         const results = await Promise.allSettled(checkPromises);
+        
+//         //check status and increment values 
+//         for (const result of results) {
+//             if (result.status === 'fulfilled' && result.value.status === 'working') {
+//                 allWorkingProxies.push(result.value);
+//                 workingCount++;
+//             } else {
+//                 deadCount++;
+//             }
+//         }
+
+//         // format output status 
+//         const processedCount = Math.min(i + CHUNK_SIZE, totalProxies);
+//         console.log(`   ...Checked ${processedCount}/${totalProxies} (Working: ${workingCount}, Dead: ${deadCount})`);
+//     }
+//     //finish test
+//     const duration = (Date.now() - startTime) / 1000;
+//     console.log(`\n✅ Check complete in ${duration.toFixed(2)} seconds.`);
+//     console.log(`Found ${allWorkingProxies.length} working proxies.`);
+
+//     return allWorkingProxies;
+// }
 /**
  * The main function to read proxies from a file and check them.
- * @param {String} filePath - Expects a .txt file Path which contains proxies. 
+ * @param {String[]} proxiesArray - an array of proxies. 
  * 
  */
-async function checkProxiesFromFile(filePath) {
-    console.log(`Starting proxy check from file: ${filePath}`);
+async function checkProxiesFromFile(proxies) {
     const startTime = Date.now();
-    let proxies;
+    // let proxies;
 
-    try {
-        //read proxies file line by line
-        const rawData = await fs.readFile(filePath, 'utf-8');
-        //use Boolean to only true values(not empty lines)
-        proxies = rawData.split('\n').map(p => p.trim()).filter(Boolean);
-        if (proxies.length === 0) {
-            console.log('⚠️ Warning: Proxy file is empty.');
-            return [];
-        }
-    } catch (error) {
-        console.error(`❌ Error: Could not read the proxy file at '${filePath}'.`);
-        return [];
-    }
+    // try {
+    //     //read proxies file line by line
+    //     const rawData = await fs.readFile(filePath, 'utf-8');
+    //     //use Boolean to only true values(not empty lines)
+    //     proxies = rawData.split('\n').map(p => p.trim()).filter(Boolean);
+    //     if (proxies.length === 0) {
+    //         console.log('⚠️ Warning: Proxy file is empty.');
+    //         return [];
+    //     }
+    // } catch (error) {
+    //     console.error(`❌ Error: Could not read the proxy file at '${filePath}'.`);
+    //     return [];
+    // }
 
     const totalProxies = proxies.length;
     console.log(`Loaded ${totalProxies} proxies. Starting check in chunks of ${CHUNK_SIZE}...`);
@@ -133,18 +189,17 @@ async function checkProxiesFromFile(filePath) {
     return allWorkingProxies;
 }
 
+// async function runTest() {
+//     // Make sure you have file in the same directory.
+//     const working = await checkProxiesFromFile('proxies-socks5.txt');
 
-async function runTest() {
-    // Make sure you have file in the same directory.
-    const working = await checkProxiesFromFile('proxies-socks5.txt');
+//     if (working.length > 0) {
+//         console.log("\n--- Working Proxies (with details) ---");
+//         console.table(working);
+//     }
+// }
 
-    if (working.length > 0) {
-        console.log("\n--- Working Proxies (with details) ---");
-        console.table(working);
-    }
-}
-
-runTest();
+// runTest();
 
 
 
