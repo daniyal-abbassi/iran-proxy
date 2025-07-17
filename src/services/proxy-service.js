@@ -72,7 +72,7 @@ async function run() {
             }
         });
         //path to output file
-        const outputFile = path.join(__dirname, '..','..','public','proxies.json');
+        const outputFile = path.join(__dirname, '..','..','docs','proxies.json');
         //wirte to proxies.json
         await fs.writeFile(outputFile, JSON.stringify(workingProxiesFromDb,null,2));
         console.log(`Successfully created proxies.json at ${outputPath}`);
