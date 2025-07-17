@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iran Proxy List</title>
+    <!-- Tailwind CSS for modern styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for a clean, modern look -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Use the Inter font family */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Style for the table header to make it sticky */
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8">
+        <!-- Header Section -->
+        <header class="text-center mb-8">
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">🇮🇷 Iran Proxy List</h1>
+            <p class="mt-2 text-md text-gray-600">A live, auto-updating list of verified proxies.</p>
+            <p class="mt-1 text-sm text-gray-500">Last Updated: <span id="last-updated">Loading...</span></p>
+        </header>
+
+        <!-- Main Content: Proxy Table -->
+        <main>
+            <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-100 sticky-header">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Proxy Address</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Protocol</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Latency (ms)</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="proxy-table-body" class="bg-white divide-y divide-gray-200">
+                            <!-- JavaScript will populate this section -->
+                            <!-- Loading State Placeholder -->
+                            <tr>
+                                <td colspan="4" class="text-center p-8">
+                                    <div class="flex justify-center items-center">
+                                        <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        <span class="text-gray-600">Loading fresh proxies...</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer Section -->
+        <footer class="text-center mt-8 text-sm text-gray-400">
+            <p>This project is open source. Check it out on <a href="#" class="text-blue-500 hover:underline">GitHub</a>.</p>
+        </footer>
+    </div>
+
+    <script>
+        // This is the client-side script that runs in the user's browser.
+        
+        /**
+         * Fetches the proxy data and populates the table.
+         */
+        async function loadProxies() {
+            const tableBody = document.getElementById('proxy-table-body');
+            const lastUpdatedSpan = document.getElementById('last-updated');
+            
+            try {
+                // Fetch the generated JSON file. 
+                // The cache-busting `?t=${new Date().getTime()}` ensures we always get the latest version.
+                const response = await fetch(`proxies.json?t=${new Date().getTime()}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const proxies = await response.json();
+
+                // Clear the "Loading..." message
+                tableBody.innerHTML = '';
+
+                if (proxies.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="4" class="text-center p-8 text-gray-500">No working proxies found at the moment. Please check back later.</td></tr>';
+                } else {
+                    // Loop through each proxy and create a table row
+                    proxies.forEach(proxy => {
+                        const row = document.createElement('tr');
+                        row.className = 'hover:bg-gray-50';
+
+                        // Determine the color for the latency badge
+                        let latencyColor = 'bg-green-100 text-green-800';
+                        if (proxy.latency > 500) latencyColor = 'bg-yellow-100 text-yellow-800';
+                        if (proxy.latency > 1500) latencyColor = 'bg-red-100 text-red-800';
+
+                        row.innerHTML = `
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm font-medium text-gray-900">${proxy.host}:${proxy.port}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                    ${proxy.protocol}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${latencyColor}">
+                                    ${proxy.latency} ms
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                    Working
+                                </span>
+                            </td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                }
+                
+                // Update the "Last Updated" timestamp
+                lastUpdatedSpan.textContent = new Date().toLocaleString();
+
+            } catch (error) {
+                console.error("Failed to load proxies:", error);
+                tableBody.innerHTML = '<tr><td colspan="4" class="text-center p-8 text-red-500">Error: Could not load proxy data.</td></tr>';
+                lastUpdatedSpan.textContent = 'Error';
+            }
+        }
+
+        // Load the proxies as soon as the page is ready.
+        document.addEventListener('DOMContentLoaded', loadProxies);
+    </script>
+</body>
+</html>
