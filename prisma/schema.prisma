@@ -1,0 +1,29 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+
+model Proxy {
+  id  Int @id @default((autoincrement()))
+  host  String
+  port  Int
+  protocol  String
+  status  String
+  latency Int
+
+  //automatically create
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  //prevent duplicate proxy
+  @@unique([host,port])
+}
