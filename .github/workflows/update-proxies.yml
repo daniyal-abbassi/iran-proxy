@@ -1,0 +1,48 @@
+# A name for our workflow which appear on the Action tab
+name: Scrape and Update Proxies
+
+# When the workflow should run
+on:
+  # allows to run workflow manually from GitHub Actions page.concurrency:
+  workflow_dispatch:
+    # '0 */6 * * *' means "run at minute 0, every 6th hour, every day".
+    # So, it will run at 00:00, 06:00, 12:00, and 18:00 UTC time.
+    schedule:
+      - cron: "0 */6 * * *"
+
+
+# The actuall tasks (jobs) to be performed
+jobs:
+    # single job named 'scrape-and-commit'
+    scrape-and-commit:
+            # This tells GitHub to prepare a fresh virtual computer running the latest version of Ubuntu Linux.
+            runs-on: ubuntu-latest
+
+            # individual steps to perform
+            steps:
+                #1- Download code from repository
+                - name: Check out repository code
+                uses: actions/checkout@v4
+
+                #2- Install nodejs so we can run script on computer
+                - name: Set up Node.js
+                uses: actions/setup-node@4
+                with:
+                    node-version: '22' # which version of node to use
+
+                #3- Install all the preoject dependencies from package.json
+                - name: Install dependencies
+                run: npm install
+
+                #4- Run main scraper script. This will do all the work
+                - name: Run the scraper and validator
+                run: node scraper.js
+
+                #5- Commit and update files back to repository
+                - name: Commit and push changes
+                uses: stefanzweifel/git-auto-commit-action@v5
+                with:
+                    # Message that will appear in git repo for the automated commit
+                    commit_message: 'CI: Auto-update proxy list'
+                    # Add all new and modified files to the commit
+                    file_pattern: 'public/proxies.json prisma/dev.db'
