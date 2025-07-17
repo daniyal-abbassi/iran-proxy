@@ -37,4 +37,4 @@ async function run() {
     return workingProxies
 }
 
-console.log(run())
+module.exports = {run}
