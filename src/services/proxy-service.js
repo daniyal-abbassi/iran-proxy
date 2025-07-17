@@ -2,11 +2,11 @@
 
 //--- IMPORTS ---
 
+const { PrismaClient } = require('@prisma/client');
 const { fetchFromTxtFile } = require('../scrapers/free-proxy-update-scraper');
 const { scrapingProxySpider } = require('../scrapers/proxy-spider-scraper');
 const { scrapeDitatompel } = require('../scrapers/ditatompel-scraper');
 const { checkProxiesFromFile } = require('../utils/proxy-checker');
-const { PrismaClient } = require('@prisma/client');
 
 //create a prisma client
 const prisma = new PrismaClient();
