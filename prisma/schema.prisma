@@ -11,19 +11,19 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model Proxy {
-  id  Int @id @default((autoincrement()))
-  host  String
-  port  Int
+  id        Int      @id @default(autoincrement())
+  host      String
+  port      Int
   protocol  String
-  status  String
-  latency Int
+  status    String
+  latency   Int
+  
+  // These fields are managed automatically
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  //automatically create
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  //prevent duplicate proxy
-  @@unique([host,port])
+  // This ensures that no two proxies have the same host and port combination
+  @@unique([host, port])
 }
+
