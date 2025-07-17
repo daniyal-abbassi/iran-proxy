@@ -1,48 +1,51 @@
-# A name for our workflow which appear on the Action tab
+# A descriptive name for our workflow. This is what you'll see on the Actions tab in GitHub.
 name: Scrape and Update Proxies
 
-# When the workflow should run
+# This section defines WHEN the workflow should run.
 on:
-  # allows to run workflow manually from GitHub Actions page.concurrency:
+  # This allows you to run the workflow manually from the GitHub Actions page.
+  # It's perfect for testing.
   workflow_dispatch:
-    # '0 */6 * * *' means "run at minute 0, every 6th hour, every day".
-    # So, it will run at 00:00, 06:00, 12:00, and 18:00 UTC time.
-    schedule:
-      - cron: "0 */6 * * *"
 
+  # This sets up a schedule. The 'cron' syntax is a standard way to define time.
+  # '0 */6 * * *' means "run at minute 0, every 6th hour, every day".
+  # So, it will run at 00:00, 06:00, 12:00, and 18:00 UTC time.
+  schedule:
+    - cron: '0 */6 * * *'
 
-# The actuall tasks (jobs) to be performed
+# This section defines the actual tasks (jobs) to be performed.
 jobs:
-    # single job named 'scrape-and-commit'
-    scrape-and-commit:
-            # This tells GitHub to prepare a fresh virtual computer running the latest version of Ubuntu Linux.
-            runs-on: ubuntu-latest
+  # We are defining a single job named 'scrape-and-commit'.
+  scrape-and-commit:
+    # This tells GitHub to prepare a fresh virtual computer running the latest version of Ubuntu Linux.
+    runs-on: ubuntu-latest
 
-            # individual steps to perform
-            steps:
-                #1- Download code from repository
-                - name: Check out repository code
-                uses: actions/checkout@v4
+    # These are the individual steps the robot will perform in order.
+    steps:
+      # Step 1: Download your code from the repository onto the virtual computer.
+      - name: Check out repository code
+        uses: actions/checkout@v4
 
-                #2- Install nodejs so we can run script on computer
-                - name: Set up Node.js
-                uses: actions/setup-node@4
-                with:
-                    node-version: '22' # which version of node to use
+      # Step 2: Install Node.js on the computer so we can run your script.
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # We specify which version of Node.js to use.
 
-                #3- Install all the preoject dependencies from package.json
-                - name: Install dependencies
-                run: npm install
+      # Step 3: Install all the project dependencies from your package.json file.
+      - name: Install dependencies
+        run: npm install
 
-                #4- Run main scraper script. This will do all the work
-                - name: Run the scraper and validator
-                run: node scraper.js
+      # Step 4: Run your main scraper script. This will do all the work.
+      - name: Run the scraper and validator
+        run: node scraper.js
 
-                #5- Commit and update files back to repository
-                - name: Commit and push changes
-                uses: stefanzweifel/git-auto-commit-action@v5
-                with:
-                    # Message that will appear in git repo for the automated commit
-                    commit_message: 'CI: Auto-update proxy list'
-                    # Add all new and modified files to the commit
-                    file_pattern: 'public/proxies.json prisma/dev.db'
+      # Step 5: Commit the updated files back to your repository.
+      # This uses a pre-made action from the community that handles all the git commands for you.
+      - name: Commit and push changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          # This is the message that will appear in your git history for the automated commit.
+          commit_message: 'CI: Auto-update proxy list'
+          # This tells the action to add all new and modified files to the commit.
+          file_pattern: 'public/proxies.json prisma/dev.db'
