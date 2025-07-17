@@ -1,22 +1,14 @@
 // Scrape From https://getfreeproxy.com/db/country/IR
 
 
+//--- IMPORTS ---
+const fs = require('fs').promises;
+const path = require('path');
+const pup = require('puppeteer');
 // --- URL ---
 const URL = 'https://getfreeproxy.com/db/country/IR?protocol=http&region=&city=&asn=&page=1';
 
-//axios config options
-const config = {
-    headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-    },
-};
-const FinalproxyList = [];
 
-
-//scrape from https://getfreeproxy.com
-//import requirements
-const fs = require('fs').promises;
-const path = require('path');
 
 // --- configurations ---
 const PROTOCOLS = ['http', 'https', 'socks4', 'socks5'];
