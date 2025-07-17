@@ -5,7 +5,7 @@
 const { fetchFromTxtFile } = require('../scrapers/free-proxy-update-scraper');
 const { scrapingProxySpider } = require('../scrapers/proxy-spider-scraper');
 const { checkProxiesFromFile } = require('../utils/proxy-checker');
-
+const {scrapeDitatompel} = require('../scrapers/ditatompel-scraper');
 //a run function for all scrapers
 async function run() {
     //All proxies
@@ -23,6 +23,9 @@ async function run() {
     proxies.push(...spiderProxies)
     //TEST
     console.log('second fetch, length is: ', proxies.length)
+    //Scraping From ditatopel.com
+    console.log('Scraping From https://www.ditatompel.com/proxy/country/ir...')
+    const ditaTompelProxies = await scrapeDitatompel() 
     //Check Proxies 
     console.log('Checking proxies...')
     const workingProxies = checkProxiesFromFile(proxies)

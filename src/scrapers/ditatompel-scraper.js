@@ -7,7 +7,7 @@ const URL = 'https://www.ditatompel.com/proxy/country/ir';
 
 const USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
 // create an async function
-async function scrapeDitatomper() {
+async function scrapeDitatompel() {
     let browser;
     try {
         //configure  browser
@@ -67,4 +67,4 @@ async function scrapeDitatomper() {
     }
 }
 
-module.exports = { scrapeDitatomper }
+module.exports = { scrapeDitatompel }
