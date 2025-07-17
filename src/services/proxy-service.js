@@ -6,6 +6,11 @@ const { fetchFromTxtFile } = require('../scrapers/free-proxy-update-scraper');
 const { scrapingProxySpider } = require('../scrapers/proxy-spider-scraper');
 const { scrapeDitatompel } = require('../scrapers/ditatompel-scraper');
 const { checkProxiesFromFile } = require('../utils/proxy-checker');
+const { PrismaClient } = require('@prisma/client');
+
+//create a prisma client
+const prisma = new PrismaClient();
+
 //a run function for all scrapers
 async function run() {
     //All proxies
@@ -18,12 +23,39 @@ async function run() {
             scrapeDitatompel(),
             scrapingProxySpider(),
         ]);
+
         //make seperate arrays into one using flatMap
         const rawProxies = results.filter(result => result.status === 'fulfilled').flatMap(result => result.value)
         console.log(`Collected a total of ${rawProxies.length} raw proxies.`);
+
         //check proxies
         const workingProxies = await checkProxiesFromFile(rawProxies);
         console.log(`Found ${workingProxies.length} working proxies. Saving to database...`);
+
+        //loop through working proxies and save each to database(or update)
+        for (const proxy of workingProxies) {
+            await prisma.proxy.upsert({
+                where: {
+                    host_port: {
+                        host: proxy.host,
+                        port: proxy.port
+                    }
+                },
+                update: {
+                    status: 'working',
+                    protocol: proxy.protocol,
+                    latency: proxy.latency,
+                },
+                create: {
+                    host: proxy.host,
+                    port: proxy.port,
+                    status: 'working',
+                    protocol: proxy.protocol,
+                    latency: proxy.latency,
+                }
+            }) //prisma upsert
+        }// for loop
+        console.log('Database has been updated.');
     } catch (error) {
         console.error('An error occurred during the orchestration process:', error);
     }
