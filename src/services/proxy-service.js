@@ -26,6 +26,10 @@ async function run() {
     //Scraping From ditatopel.com
     console.log('Scraping From https://www.ditatompel.com/proxy/country/ir...')
     const ditaTompelProxies = await scrapeDitatompel() 
+    proxies.push(...ditaTompelProxies)
+    //TEST
+    console.log('second fetch, length is: ', proxies.length)
+    
     //Check Proxies 
     console.log('Checking proxies...')
     const workingProxies = checkProxiesFromFile(proxies)
