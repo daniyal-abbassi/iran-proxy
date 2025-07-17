@@ -1,19 +1,32 @@
 // Run scrapers and check,add to database
- 
+
 //--- IMPORTS ---
-const {fetchFromTxtFile} = require('../scrapers/free-proxy-update-scraper');
-const {checkProxiesFromFile} = require('../utils/proxy-checker');
+
+const { fetchFromTxtFile } = require('../scrapers/free-proxy-update-scraper');
+const { scrapingProxySpider } = require('../scrapers/proxy-spider-scraper');
+const { checkProxiesFromFile } = require('../utils/proxy-checker');
 
 //a run function for all scrapers
 async function run() {
-    // Scrape From https://freeproxyupdate.com/iran-ir
-    console.log('Scrape From https://freeproxyupdate.com/iran-ir...')
-    const proxies = await fetchFromTxtFile();
+    //All proxies
+    let proxies = [];
 
+    // Scrape From freeproxyupdate.com/iran-ir
+    console.log('Scrape From https://freeproxyupdate.com/iran-ir...')
+    const freeProxiesUpdateproxies = await fetchFromTxtFile();
+    proxies.push(...freeProxiesUpdateproxies)
+    //TEST
+    console.log('first fetch, length is: ', proxies.length)
+    //Scraping From proxy-spider.com
+    console.log('Scraping From https://proxy-spider.com...')
+    const spiderProxies = await scrapingProxySpider();
+    proxies.push(...spiderProxies)
+    //TEST
+    console.log('second fetch, length is: ', proxies.length)
     //Check Proxies 
     console.log('Checking proxies...')
     const workingProxies = checkProxiesFromFile(proxies)
-    console.log(workingProxies)
+    // console.log(workingProxies)
     return workingProxies
 }
 
