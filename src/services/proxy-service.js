@@ -1,6 +1,8 @@
 // Run scrapers and check,add to database
 
 //--- IMPORTS ---
+const fs = require('fs').promises;
+const path = require('path');
 
 const { PrismaClient } = require('../generated/prisma');
 const { fetchFromTxtFile } = require('../scrapers/free-proxy-update-scraper');
@@ -58,8 +60,28 @@ async function run() {
             }) //prisma upsert
         }// for loop
         console.log('Database has been updated.');
+        
+        console.log('Generating JSON file for the frontend...');
+        //query the database to get final update
+        const workingProxiesFromDb = await prisma.proxy.findMany({
+            where: {
+                status: 'working',
+            },
+            orderBy: {
+                latency: 'asc' //fastest first
+            }
+        });
+        //path to output file
+        const outputFile = path.join(__dirname, '..',',,','public','proxies.json');
+        //wirte to proxies.json
+        await fs.writeFile(outputFile, JSON.stringify(workingProxiesFromDb,null,2));
+        console.log(`Successfully created proxies.json at ${outputPath}`);
+       
     } catch (error) {
         console.error('An error occurred during the orchestration process:', error);
+    } finally {
+        await prisma.$disconnect();
+        console.log('Process finished and disconnected from database.');
     }
 
 }
