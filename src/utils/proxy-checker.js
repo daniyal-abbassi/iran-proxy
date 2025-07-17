@@ -110,9 +110,9 @@ async function checkProxiesFromFile(proxies) {
         const processedCount = Math.min(i + CHUNK_SIZE, totalProxies);
         console.log(`   ...Checked ${processedCount}/${totalProxies} (Working: ${workingCount}, Dead: ${deadCount})`);
     }
-    // if(allWorkingProxies && allWorkingProxies.length > 0) {
-    //     console.log(allWorkingProxies)
-    // }
+    if(allWorkingProxies && allWorkingProxies.length > 0) {
+        console.log(allWorkingProxies)
+    }
     //finish test
     const duration = (Date.now() - startTime) / 1000;
     console.log(`\n✅ Check complete in ${duration.toFixed(2)} seconds.`);

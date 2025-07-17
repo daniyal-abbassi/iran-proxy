@@ -2,7 +2,7 @@
 
 //--- IMPORTS ---
 
-const { PrismaClient } = require('@prisma/client');
+const { PrismaClient } = require('../generated/prisma');
 const { fetchFromTxtFile } = require('../scrapers/free-proxy-update-scraper');
 const { scrapingProxySpider } = require('../scrapers/proxy-spider-scraper');
 const { scrapeDitatompel } = require('../scrapers/ditatompel-scraper');
@@ -34,11 +34,13 @@ async function run() {
 
         //loop through working proxies and save each to database(or update)
         for (const proxy of workingProxies) {
+            let [host,port] = proxy['proxy'].split(':')
+            port = parseInt(port,10)
             await prisma.proxy.upsert({
                 where: {
                     host_port: {
-                        host: proxy.host,
-                        port: proxy.port
+                        host: host,
+                        port: port
                     }
                 },
                 update: {
@@ -47,8 +49,8 @@ async function run() {
                     latency: proxy.latency,
                 },
                 create: {
-                    host: proxy.host,
-                    port: proxy.port,
+                    host: host,
+                    port: port,
                     status: 'working',
                     protocol: proxy.protocol,
                     latency: proxy.latency,
