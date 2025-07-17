@@ -10,31 +10,26 @@ const { checkProxiesFromFile } = require('../utils/proxy-checker');
 async function run() {
     //All proxies
     let proxies = [];
+    console.log('Starting the scraping and validation process...');
+    try {
+        //collect all proxes with promise
+        const results = await Promise.allSettled([
+            fetchFromTxtFile(),
+            scrapeDitatompel(),
+            scrapingProxySpider(),
+        ]);
+        //make seperate arrays into one using flatMap
+        const rawProxies = results.filter(result => result.status === 'fulfilled').flatMap(result => result.value)
+        console.log(`Collected a total of ${rawProxies.length} raw proxies.`);
+        //check proxies
+        const workingProxies = await checkProxiesFromFile(rawProxies);
+        console.log(`Found ${workingProxies.length} working proxies. Saving to database...`);
+    } catch (error) {
+        console.error('An error occurred during the orchestration process:', error);
+    }
 
-    // Scrape From freeproxyupdate.com/iran-ir
-    console.log('Scrape From https://freeproxyupdate.com/iran-ir...')
-    const freeProxiesUpdateproxies = await fetchFromTxtFile();
-    proxies.push(...freeProxiesUpdateproxies)
-    //TEST
-    console.log('first fetch, length is: ', proxies.length)
-    //Scraping From proxy-spider.com
-    console.log('Scraping From https://proxy-spider.com...')
-    const spiderProxies = await scrapingProxySpider();
-    proxies.push(...spiderProxies)
-    //TEST
-    console.log('second fetch, length is: ', proxies.length)
-    //Scraping From ditatopel.com
-    console.log('Scraping From https://www.ditatompel.com/proxy/country/ir...')
-    const ditaTompelProxies = await scrapeDitatompel()
-    proxies.push(...ditaTompelProxies)
-    //TEST
-    console.log('second fetch, length is: ', proxies.length)
-
-    //Check Proxies 
-    console.log('Checking proxies...')
-    const workingProxies = checkProxiesFromFile(proxies)
-    // console.log(workingProxies)
-    return workingProxies
 }
 
-module.exports = {run}
+
+
+module.exports = { run }
