@@ -1,30 +1,39 @@
 // Scrape From https://www.ditatompel.com/proxy/country/ir
 
+const pup = require('puppeteer');
 
 // --- URL ---
 const URL = 'https://www.ditatompel.com/proxy/country/ir';
-//axios config options
-const config = {
-    headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-    },
-};
-const FinalproxyList = [];
 
-const pup = require('puppeteer');
+const USER_AGENT =  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
 // create an async function
-async function scrape() {
+async function scrapeDitatomper() {
+    let browser;
     try {
-        //create a browser
-        const browser = await pup.launch({ args: ['--proxy-server=http://65.108.145.212:8084'], headless: false });
+        //configure  browser
+        browser = await pup.launch({
+            headless: true, // Switch to true in production
+            args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-dev-shm-usage'
+            ],
+            timeout: 60000
+        });
         //create a page
         const page = await browser.newPage();
-        console.log('we are scraping from ' + url + ":");
+        await page.setUserAgent(USER_AGENT)
+        console.log('we are scraping from ' + URL + ":");
         //go to the page
-        // await page.goto(url);
-        await page.goto(url);
+        await page.goto(URL, {
+            waitUntil: 'domcontentloaded', // Changed from array to string
+            timeout: 45000
+        });;
         // //get the table/tr/td/strong/span and... test
         //changing select
+        await page.waitForSelector('select#rowsPerPage', {
+            timeout: 10000
+        })
         await page.select('select#rowsPerPage', '100');
         //wait for changes
         await page.waitForNetworkIdle();
@@ -32,18 +41,19 @@ async function scrape() {
             let tableData = Array.from(document.querySelectorAll('td  strong'), (strong) => strong.textContent);
             return tableData
         })
-        //convert array to object => {ipAddress,port}
-        // console.log(table)
-        const proxyList = [];
+     
+        const proxies = [];
         for (let i = 0; i < table.length; i++) {
             let [ip, port] = table[i].split(':');
-            // proxyList.push({ ipAddress: ip, port: port })
-            proxyList.push(`${ip}:${port}`)
+            proxies.push(`${ip}:${port}`)
         }
-        console.log(proxyList)
-        FinalproxyList.push(...proxyList)
-        await browser.close();
+        console.log(proxies)
+        return proxies
     } catch (error) {
         console.log('scrape failed: ', error);
+    } finally {
+        await browser.close();
     }
 }
+
+scrapeDitatomper()
