@@ -38,7 +38,7 @@ This project was created to provide a reliable, up-to-date list of working Irani
 
 ## ✨ Features
 
-- **Automated Scraping:** Runs on a schedule using GitHub Actions to scrape proxies from multiple public sources.
+- **Automated Scraping:** Runs on a schedule using GitHub Actions to scrape proxies from multiple public sources: [ditatompel.com](https://www.ditatompel.com/proxy/country/ir) - [freeproxyupdate.com](https://freeproxyupdate.com/iran-ir) - [proxy-spider](https://proxy-spider.com/proxies/locations/ir-iran-islamic-republic-of) - **WIP**: [getfreeproxy.com](https://getfreeproxy.com/db/country/IR?protocol=http&region=&city=&asn=&page=1)
 - **High-Performance Validation:** Uses a fast, asynchronous checker to validate proxies for multiple protocols (HTTP, SOCKS4, SOCKS5).
 - **Data Persistence:** Stores and tracks proxies in a local SQLite database using Prisma for data integrity.
 - **Auto-Updating Static Site:** The final list of working proxies is automatically published to a static JSON file, which is then displayed on a clean, responsive site hosted by GitHub Pages.
