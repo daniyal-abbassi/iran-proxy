@@ -9,6 +9,19 @@ An automated system that scrapes, validates, and serves a live list of Iranian p
 
 ---
 
+## Table of Content
+-       [Static Site](#-static-site)
+-       [The Purpose](#-the-purpose)
+-       [Features](#-features)
+-       [Technology Stack](#️-technology-stack)
+-       [How It Works](#️-how-it-works)
+-       [Running Locally](#-running-locally)
+-       [Screenshot](#screenshot)
+-       [Contributing](#-contributing)
+-       [License](#-license)
+
+---
+
 ## 🟢 Static Site
 
 **Check out the live, auto-updating proxy list here:**
@@ -86,6 +99,12 @@ You can run this project on your own machine to get a proxy list tailored to you
     ```
 
 The script will run the full scrape-and-check process and output a table of working proxies directly in your console.
+
+---
+
+## Screenshot
+
+---
 
 ## 🤝 Contributing
 
