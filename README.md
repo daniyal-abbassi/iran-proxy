@@ -10,15 +10,15 @@ An automated system that scrapes, validates, and serves a live list of Iranian p
 ---
 
 ## Table of Content
--       [Static Site](#-static-site)
--       [The Purpose](#-the-purpose)
--       [Features](#-features)
--       [Technology Stack](#️-technology-stack)
--       [How It Works](#️-how-it-works)
--       [Running Locally](#-running-locally)
--       [Screenshot](#screenshot)
--       [Contributing](#-contributing)
--       [License](#-license)
+-    [Static Site](#-static-site)
+-    [The Purpose](#-the-purpose)
+-    [Features](#-features)
+-    [Technology Stack](#️-technology-stack)
+-    [How It Works](#️-how-it-works)
+-    [Running Locally](#-running-locally)
+-    [Screenshot](#screenshot)
+-    [Contributing](#-contributing)
+-    [License](#-license)
 
 ---
 
