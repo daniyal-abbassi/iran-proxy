@@ -104,6 +104,8 @@ The script will run the full scrape-and-check process and output a table of work
 
 ## Screenshot
 
+![Main page](./screenshot/iran-proxy.png)
+
 ---
 
 ## 🤝 Contributing
